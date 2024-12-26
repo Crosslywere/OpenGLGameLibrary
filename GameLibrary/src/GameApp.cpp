@@ -3,9 +3,9 @@
 #include <glad/glad.h>
 #include <GLFW/glfw3.h>
 #include <chrono>
-#include <cstdio>
 
 #ifdef DEBUG
+#include <cstdio>
 #define DEBUG_MSG(fmt, ...) std::printf(fmt, __VA_ARGS__)
 #else
 #define DEBUG_MSG(fmt, ...)
@@ -21,7 +21,7 @@ static void CleanUp() {
 bool GameApp::Create(const std::string& title, uint32_t width, uint32_t height, GLVersionFlags versionFlag) {
 	glfwInit();
 	/**
-	 * Selecting an opengl version to used based on the @{code versionFlag} 
+	 * Selecting an opengl version to used based on the @{code versionFlag}
 	 */
 	switch (versionFlag) {
 	case GL_4_0:
