@@ -1,9 +1,9 @@
-#include <GameApp.h>
+#include <App.h>
 #include <cstdio>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
 
-class Application : public GameApp {
+class Application : public Game::App {
 public:
 	virtual void OnCreate() override {
 		glm::vec2 vertices[] = {
