@@ -4,12 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <chrono>
 
-#ifdef DEBUG
-#include <cstdio>
-#define DEBUG_MSG(fmt, ...) std::printf(fmt, __VA_ARGS__)
-#else
-#define DEBUG_MSG(fmt, ...)
-#endif
+#include <Logging.h>
 
 inline GLFWwindow* g_Window = nullptr;
 
