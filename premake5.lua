@@ -31,11 +31,13 @@ workspace "OpenGLGameLibrary"
 		files {
 			"%{prj.name}/**.h",
 			"%{prj.name}/**.cpp",
-			"vendors/glad/src/glad.c"
+			"vendors/glad/src/glad.c",
+			"%{prj.name}/res/**.glsl"
 		}
 		vpaths {
 			["Header"] = "**.h",
-			["Source"] = { "**.c", "**.cpp" }
+			["Source"] = { "**.c", "**.cpp" },
+			["Resource"] = "**.glsl"
 		}
 		includedirs {
 			"%{prj.name}/include",
