@@ -1,4 +1,5 @@
 #include <App.h>
+#include <Shader.h>
 #include <cstdio>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -16,42 +17,40 @@ public:
 		glGenBuffers(1, &m_VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), (void*)0);
+		glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(glm::vec2), static_cast<void*>(0));
 		glEnableVertexAttribArray(0);
 
-		m_Program = glCreateProgram();
+		m_Shader = Game::Shader({
+			{ "res/shaders/simple.vert.glsl", Game::Shader::VERTEX_SHADER },
+			{ "res/shaders/simple.frag.glsl", Game::Shader::FRAGMENT_SHADER },
+		});
+		m_Shader.UseProgram();
+		m_Color = glm::vec3(1.0, 0.5, 0.0);
+		m_Shader.SetUniform3f("color", m_Color);
+		m_Accum = 0.0;
+	}
 
-		const char* vertexShaderSource = R"(
-#version 330 core
-
-layout (location = 0) in vec3 aPos;
-
-void main() {
-	gl_Position = vec4(aPos, 1.0);
-}
-)";
-		unsigned vertShader = glCreateShader(GL_VERTEX_SHADER);
-		glShaderSource(vertShader, 1, &vertexShaderSource, 0);
-		glCompileShader(vertShader);
-		glAttachShader(m_Program, vertShader);
-
-		const char* fragmentShaderSource = R"(
-#version 330 core
-
-void main() {
-	gl_FragColor = vec4(1.0, 0.5, 0.125, 1.0);
-}
-)";
-		unsigned fragShader = glCreateShader(GL_FRAGMENT_SHADER);
-		glShaderSource(fragShader, 1, &fragmentShaderSource, 0);
-		glCompileShader(fragShader);
-
-		glAttachShader(m_Program, fragShader);
-		glLinkProgram(m_Program);
-		glUseProgram(m_Program);
-
-		glDeleteShader(vertShader);
-		glDeleteShader(fragShader);
+	virtual void OnUpdate(double dt) override {
+		m_Accum += dt;
+		if (static_cast<int>(m_Accum) % 2 == 0) {
+			m_Color.r += dt;
+		}
+		else {
+			m_Color.r -= dt;
+		}
+		if (static_cast<int>(m_Accum + 0.5) % 2 == 0) {
+			m_Color.g += dt;
+		}
+		else {
+			m_Color.g -= dt;
+		}
+		if (static_cast<int>(m_Accum + 1.0) % 2 == 0) {
+			m_Color.b -= dt;
+		}
+		else {
+			m_Color.b += dt;
+		}
+		m_Shader.SetUniform3f("color", m_Color);
 	}
 
 	virtual void OnRender() override {
@@ -59,12 +58,15 @@ void main() {
 	}
 
 	virtual void OnExit() override {
-		glDeleteProgram(m_Program);
+		m_Shader.DeleteShader();
 		glDeleteBuffers(1, &m_VBO);
 		glDeleteVertexArrays(1, &m_VAO);
 	}
 private:
-	unsigned m_VAO{}, m_VBO{}, m_Program{};
+	unsigned m_VAO{}, m_VBO{};
+	Game::Shader m_Shader;
+	glm::vec3 m_Color;
+	double m_Accum;
 };
 
 int main(int argc, char** argv) {
