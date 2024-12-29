@@ -11,15 +11,23 @@ class Application : public Game::App {
 public:
 	virtual void OnCreate() override {
 		vec3 vertices[] = {
-			vec3{ 0.0f, 0.5f, 0.0f}, vec3{1.0f, 0.0f, 0.0f},
+			vec3{ 0.5f, 0.5f, 0.0f}, vec3{1.0f, 0.0f, 0.0f},
 			vec3{ 0.5f,-0.5f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
 			vec3{-0.5f,-0.5f, 0.0f}, vec3{0.0f, 0.0f, 1.0f},
+			vec3{-0.5f, 0.5f, 0.0f}, vec3{1.0f, 1.0f, 1.0f},
+		};
+		uint32_t indices[] = {
+			0, 1, 2,
+			2, 3, 0,
 		};
 		glGenVertexArrays(1, &m_VAO);
 		glBindVertexArray(m_VAO);
 		glGenBuffers(1, &m_VBO);
 		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
 		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+		glGenBuffers(1, &m_EBO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 2, (void*)0);
 		glEnableVertexAttribArray(0);
 		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 2, (void*)sizeof(vec3));
@@ -59,16 +67,18 @@ public:
 	}
 
 	virtual void OnRender() override {
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
 
 	virtual void OnExit() override {
 		m_Shader.DeleteShader();
+		glDeleteBuffers(1, &m_EBO);
 		glDeleteBuffers(1, &m_VBO);
 		glDeleteVertexArrays(1, &m_VAO);
 	}
 private:
-	unsigned m_VAO{}, m_VBO{};
+	unsigned m_VAO{}, m_VBO{}, m_EBO{};
 	Game::Shader m_Shader;
 	glm::vec3 m_Color;
 	double m_Accum;
