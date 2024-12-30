@@ -11,10 +11,10 @@ class Application : public Game::App {
 public:
 	virtual void OnCreate() override {
 		vec3 vertices[] = {
-			vec3{ 0.5f, 0.5f, 0.0f}, vec3{1.0f, 0.0f, 0.0f},
-			vec3{ 0.5f,-0.5f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
-			vec3{-0.5f,-0.5f, 0.0f}, vec3{0.0f, 0.0f, 1.0f},
-			vec3{-0.5f, 0.5f, 0.0f}, vec3{1.0f, 1.0f, 1.0f},
+			vec3{ 0.5f, 0.5f, 0.0f}, vec3{1.0f, 1.0f, 0.0f}, vec3{ 1.0f, 0.0f, 0.0f },
+			vec3{ 0.5f,-0.5f, 0.0f}, vec3{1.0f, 0.0f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
+			vec3{-0.5f,-0.5f, 0.0f}, vec3{0.0f, 0.0f, 0.0f}, vec3{0.0f, 0.0f, 1.0f},
+			vec3{-0.5f, 0.5f, 0.0f}, vec3{0.0f, 1.0f, 0.0f}, vec3{1.0f, 1.0f, 1.0f},
 		};
 		uint32_t indices[] = {
 			0, 1, 2,
@@ -28,10 +28,12 @@ public:
 		glGenBuffers(1, &m_EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 2, (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(0));
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 2, (void*)sizeof(vec3));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3)));
 		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 2));
+		glEnableVertexAttribArray(2);
 
 		m_Shader = Game::Shader({
 			{ "res/shaders/simple.vert.glsl", Game::Shader::VERTEX_SHADER },
@@ -67,7 +69,6 @@ public:
 	}
 
 	virtual void OnRender() override {
-		glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
 	}
 

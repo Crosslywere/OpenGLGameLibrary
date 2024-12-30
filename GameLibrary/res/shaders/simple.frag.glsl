@@ -1,5 +1,6 @@
 #version 330 core
 
+in vec2 iTexCoord;
 in vec3 iColor;
 
 uniform vec3 color;
