@@ -43,7 +43,8 @@ workspace "OpenGLGameLibrary"
 			"%{prj.name}/include",
 			"vendors/glad/include",
 			"vendors/glfw/include",
-			"vendors/glm"
+			"vendors/glm",
+			"vendors/stb"
 		}
 		links "glfw"
 
