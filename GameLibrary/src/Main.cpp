@@ -3,6 +3,8 @@
 #include <cstdio>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#define STB_IMAGE_IMPLEMENTATION
+#include <stb_image.h>
 
 using glm::vec2;
 using glm::vec3;
@@ -11,7 +13,7 @@ class Application : public Game::App {
 public:
 	virtual void OnCreate() override {
 		vec3 vertices[] = {
-			vec3{ 0.5f, 0.5f, 0.0f}, vec3{1.0f, 1.0f, 0.0f}, vec3{ 1.0f, 0.0f, 0.0f },
+			vec3{ 0.5f, 0.5f, 0.0f}, vec3{1.0f, 1.0f, 0.0f}, vec3{1.0f, 0.0f, 0.0f},
 			vec3{ 0.5f,-0.5f, 0.0f}, vec3{1.0f, 0.0f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
 			vec3{-0.5f,-0.5f, 0.0f}, vec3{0.0f, 0.0f, 0.0f}, vec3{0.0f, 0.0f, 1.0f},
 			vec3{-0.5f, 0.5f, 0.0f}, vec3{0.0f, 1.0f, 0.0f}, vec3{1.0f, 1.0f, 1.0f},
@@ -43,6 +45,14 @@ public:
 		m_Color = glm::vec3(1.0, 0.5, 0.0);
 		m_Shader.SetUniform3f("color", m_Color);
 		m_Accum = 0.0;
+
+		int width{}, height{};
+		uint8_t* data = stbi_load("res/images/brick.jpg", &width, &height, nullptr, 3);
+		glGenTextures(1, &m_Texture);
+		glBindTexture(GL_TEXTURE_2D, m_Texture);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+		stbi_image_free(data);
 	}
 
 	virtual void OnUpdate(double dt) override {
@@ -73,13 +83,14 @@ public:
 	}
 
 	virtual void OnExit() override {
+		glDeleteTextures(1, &m_Texture);
 		m_Shader.DeleteShader();
 		glDeleteBuffers(1, &m_EBO);
 		glDeleteBuffers(1, &m_VBO);
 		glDeleteVertexArrays(1, &m_VAO);
 	}
 private:
-	unsigned m_VAO{}, m_VBO{}, m_EBO{};
+	unsigned m_VAO{}, m_VBO{}, m_EBO{}, m_Texture;
 	Game::Shader m_Shader;
 	glm::vec3 m_Color;
 	double m_Accum;
