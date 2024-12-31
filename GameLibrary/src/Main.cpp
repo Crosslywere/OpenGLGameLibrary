@@ -1,10 +1,9 @@
 #include <App.h>
 #include <Shader.h>
+#include <Texture.h>
 #include <cstdio>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
-#define STB_IMAGE_IMPLEMENTATION
-#include <stb_image.h>
 
 using glm::vec2;
 using glm::vec3;
@@ -30,9 +29,9 @@ public:
 		glGenBuffers(1, &m_EBO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
 		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(0));
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 0));
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3)));
+		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 1));
 		glEnableVertexAttribArray(1);
 		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 2));
 		glEnableVertexAttribArray(2);
@@ -42,17 +41,12 @@ public:
 			{ "res/shaders/simple.frag.glsl", Game::Shader::FRAGMENT_SHADER },
 		});
 		m_Shader.UseProgram();
-		m_Color = glm::vec3(1.0, 0.5, 0.0);
+		m_Color = glm::vec3(1.0f, 0.5f, 0.0f);
 		m_Shader.SetUniform3f("color", m_Color);
-		m_Accum = 0.0;
 
-		int width{}, height{};
-		uint8_t* data = stbi_load("res/images/brick.jpg", &width, &height, nullptr, 3);
-		glGenTextures(1, &m_Texture);
-		glBindTexture(GL_TEXTURE_2D, m_Texture);
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
-		glGenerateMipmap(GL_TEXTURE_2D);
-		stbi_image_free(data);
+		m_Texture = Game::Texture("res/images/brick.jpg");
+		m_Texture.Bind(0);
+		m_Shader.SetUniform1i("brickTexture", 0);
 	}
 
 	virtual void OnUpdate(double dt) override {
@@ -83,21 +77,27 @@ public:
 	}
 
 	virtual void OnExit() override {
-		glDeleteTextures(1, &m_Texture);
+		m_Texture.DeleteTexture();
 		m_Shader.DeleteShader();
 		glDeleteBuffers(1, &m_EBO);
 		glDeleteBuffers(1, &m_VBO);
 		glDeleteVertexArrays(1, &m_VAO);
 	}
 private:
-	unsigned m_VAO{}, m_VBO{}, m_EBO{}, m_Texture;
+	unsigned m_VAO{}, m_VBO{}, m_EBO{};
 	Game::Shader m_Shader;
-	glm::vec3 m_Color;
-	double m_Accum;
+	Game::Texture m_Texture;
+	glm::vec3 m_Color{};
+	double m_Accum{};
 };
 
 int main(int argc, char** argv) {
 	Application app;
-	if (app.Create("Application", 800, 600))
+	if (app.Create("Application", 800, 600)) {
 		app.Run();
+		exit(EXIT_SUCCESS);
+	}
+	else {
+		exit(EXIT_FAILURE);
+	}
 }
