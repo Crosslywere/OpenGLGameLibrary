@@ -2,6 +2,7 @@
 
 #include <glad/glad.h>
 #include <glm/glm.hpp>
+#include <glm/gtc/type_ptr.hpp>
 
 #include <fstream>
 #include <sstream>
@@ -31,24 +32,54 @@ namespace Game {
 		glUseProgram(m_Program);
 	}
 
-	void Shader::SetUniform1f(const char* name, float value) {
+	void Shader::SetUniform1f(const char* name, float value) const {
 		int location = glGetUniformLocation(m_Program, name);
 		glUniform1f(location, value);
 	}
 
-	void Shader::SetUniform2f(const char* name, const glm::vec2& vector) {
+	void Shader::SetUniform2f(const char* name, const glm::vec2& vector) const {
 		int location = glGetUniformLocation(m_Program, name);
 		glUniform2f(location, vector.x, vector.y);
 	}
 
-	void Shader::SetUniform3f(const char* name, const glm::vec3& vector) {
+	void Shader::SetUniform3f(const char* name, const glm::vec3& vector) const {
 		int location = glGetUniformLocation(m_Program, name);
 		glUniform3f(location, vector.x, vector.y, vector.z);
 	}
 
-	void Shader::SetUniform4f(const char* name, const glm::vec4& vector) {
+	void Shader::SetUniform4f(const char* name, const glm::vec4& vector) const {
 		int location = glGetUniformLocation(m_Program, name);
 		glUniform4f(location, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void Shader::SetUniform1i(const char* name, int value) const {
+		int location = glGetUniformLocation(m_Program, name);
+		glUniform1i(location, value);
+	}
+
+	void Shader::SetUniform2i(const char* name, const glm::ivec2& vector) const {
+		int location = glGetUniformLocation(m_Program, name);
+		glUniform2i(location, vector.x, vector.y);
+	}
+
+	void Shader::SetUniform3i(const char* name, const glm::ivec3& vector) const {
+		int location = glGetUniformLocation(m_Program, name);
+		glUniform3i(location, vector.x, vector.y, vector.z);
+	}
+
+	void Shader::SetUniform4i(const char* name, const glm::ivec4& vector) const {
+		int location = glGetUniformLocation(m_Program, name);
+		glUniform4i(location, vector.x, vector.y, vector.z, vector.w);
+	}
+
+	void Shader::SetUniformMat3(const char* name, const glm::mat3& mat) const {
+		int location = glGetUniformLocation(m_Program, name);
+		glUniformMatrix3fv(location, 1, GL_FALSE, glm::value_ptr(mat));
+	}
+
+	void Shader::SetUniformMat4(const char* name, const glm::mat4& mat) const {
+		int location = glGetUniformLocation(m_Program, name);
+		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
 	void Shader::DeleteShader() {
