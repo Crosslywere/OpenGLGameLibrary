@@ -22,7 +22,7 @@ namespace Game {
 		}
 	}
 
-	void Texture::Bind(uint32_t index) const {
+	void Texture::Bind(int index) const {
 		glActiveTexture(GL_TEXTURE0 + index);
 		glBindTexture(GL_TEXTURE_2D, m_Texture);
 	}

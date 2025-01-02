@@ -3,6 +3,8 @@
 #include <set>
 #include <glm/glm.hpp>
 
+#include <Texture.h>
+
 namespace Game {
 
 	class Shader {
@@ -26,6 +28,7 @@ namespace Game {
 		void SetUniform4i(const char* name, const glm::ivec4& vector) const;
 		void SetUniformMat3(const char* name, const glm::mat3& mat) const;
 		void SetUniformMat4(const char* name, const glm::mat4& mat) const;
+		void SetTextureUniform(const char* name, const Texture& texture, int index = 0) const;
 		void DeleteShader();
 	private:
 		uint32_t m_Program{};

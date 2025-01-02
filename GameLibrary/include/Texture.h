@@ -8,7 +8,7 @@ namespace Game {
 	public:
 		Texture() = default;
 		Texture(const char* file, bool flip = false);
-		void Bind(uint32_t index) const;
+		void Bind(int index = 0) const;
 		void DeleteTexture();
 	private:
 		uint32_t m_Texture{};

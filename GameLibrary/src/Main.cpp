@@ -45,8 +45,7 @@ public:
 		m_Shader.SetUniform3f("color", m_Color);
 
 		m_Texture = Game::Texture("res/images/brick.jpg");
-		m_Texture.Bind(0);
-		m_Shader.SetUniform1i("brickTexture", 0);
+		m_Shader.SetTextureUniform("brickTexture", m_Texture);
 	}
 
 	virtual void OnUpdate(double dt) override {

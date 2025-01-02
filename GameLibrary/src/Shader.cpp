@@ -82,6 +82,11 @@ namespace Game {
 		glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(mat));
 	}
 
+	void Shader::SetTextureUniform(const char* name, const Texture& texture, int index) const {
+		texture.Bind(index);
+		SetUniform1i(name, index);
+	}
+
 	void Shader::DeleteShader() {
 		glDeleteProgram(m_Program);
 		m_Program = 0;
