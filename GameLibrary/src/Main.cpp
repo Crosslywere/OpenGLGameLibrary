@@ -1,6 +1,8 @@
 #include <App.h>
 #include <Shader.h>
 #include <Texture.h>
+#include <Layout.h>
+#include <Mesh.h>
 #include <cstdio>
 #include <glad/glad.h>
 #include <glm/glm.hpp>
@@ -11,30 +13,17 @@ using glm::vec3;
 class Application : public Game::App {
 public:
 	virtual void OnCreate() override {
-		vec3 vertices[] = {
+		std::vector<vec3> vertices = {
 			vec3{ 0.5f, 0.5f, 0.0f}, vec3{1.0f, 1.0f, 0.0f}, vec3{1.0f, 0.0f, 0.0f},
 			vec3{ 0.5f,-0.5f, 0.0f}, vec3{1.0f, 0.0f, 0.0f}, vec3{0.0f, 1.0f, 0.0f},
 			vec3{-0.5f,-0.5f, 0.0f}, vec3{0.0f, 0.0f, 0.0f}, vec3{0.0f, 0.0f, 1.0f},
 			vec3{-0.5f, 0.5f, 0.0f}, vec3{0.0f, 1.0f, 0.0f}, vec3{1.0f, 1.0f, 1.0f},
 		};
-		uint32_t indices[] = {
+		std::vector<uint32_t> indices = {
 			0, 1, 2,
 			2, 3, 0,
 		};
-		glGenVertexArrays(1, &m_VAO);
-		glBindVertexArray(m_VAO);
-		glGenBuffers(1, &m_VBO);
-		glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-		glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-		glGenBuffers(1, &m_EBO);
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 0));
-		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 1));
-		glEnableVertexAttribArray(1);
-		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(vec3) * 3, reinterpret_cast<void*>(sizeof(vec3) * 2));
-		glEnableVertexAttribArray(2);
+		m_Mesh = Game::Mesh(vertices, indices, Game::Layout().Append(ENABLED_VEC3).Append(ENABLED_VEC3).Append(ENABLED_VEC3));
 
 		m_Shader = Game::Shader({
 			{ "res/shaders/simple.vert.glsl", Game::Shader::VERTEX_SHADER },
@@ -72,20 +61,18 @@ public:
 	}
 
 	virtual void OnRender() override {
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
+		m_Mesh.Draw();
 	}
 
 	virtual void OnExit() override {
 		m_Texture.DeleteTexture();
 		m_Shader.DeleteShader();
-		glDeleteBuffers(1, &m_EBO);
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteVertexArrays(1, &m_VAO);
+		m_Mesh.DeleteMesh();
 	}
 private:
-	unsigned m_VAO{}, m_VBO{}, m_EBO{};
 	Game::Shader m_Shader;
 	Game::Texture m_Texture;
+	Game::Mesh m_Mesh;
 	glm::vec3 m_Color{};
 	double m_Accum{};
 };
